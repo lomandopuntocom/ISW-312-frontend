@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useEmpresa } from '../../context/EmpresaContext';
 import { getDashboard } from '../../api/dashboard';
+import { getProductos } from '../../api/productos';
 
 interface DashboardData {
   totalVendido: number;
@@ -17,10 +18,19 @@ export default function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [productos, setProductos] = useState<any[]>([]);
+
   useEffect(() => {
     if (!empresa) return;
-    getDashboard(empresa.id)
-      .then(setData)
+    setLoading(true);
+    Promise.all([
+      getDashboard(empresa.id),
+      getProductos(empresa.id)
+    ])
+      .then(([dashboardData, prods]) => {
+        setData(dashboardData);
+        setProductos(prods);
+      })
       .finally(() => setLoading(false));
   }, [empresa]);
 
@@ -35,9 +45,9 @@ export default function Dashboard() {
       {/* Métricas principales */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
         {[
-          { label: 'Total vendido hoy', valor: `S/ ${data.totalVendido.toFixed(2)}`, color: '#10b981', icono: '💰' },
+          { label: 'Total vendido hoy', valor: `Bs. ${data.totalVendido.toFixed(2)}`, color: '#10b981', icono: '💰' },
           { label: 'Tickets pagados', valor: data.cantidadTickets, color: '#3b82f6', icono: '🧾' },
-          { label: 'Ticket promedio', valor: `S/ ${data.ticketPromedio.toFixed(2)}`, color: '#f59e0b', icono: '📊' },
+          { label: 'Ticket promedio', valor: `Bs. ${data.ticketPromedio.toFixed(2)}`, color: '#f59e0b', icono: '📊' },
         ].map(({ label, valor, color, icono }) => (
           <div key={label} style={{ background: 'white', borderRadius: 12, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: `4px solid ${color}` }}>
             <div style={{ fontSize: 28, marginBottom: 12 }}>{icono}</div>
@@ -56,7 +66,7 @@ export default function Dashboard() {
           ) : (
             data.topProductos.map((p, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
-                <span style={{ fontSize: 14, color: '#1e293b' }}>{p.producto}</span>
+                <span style={{ fontSize: 14, color: '#1e293b' }}>{productos.find(prod => prod.id === p.producto)?.nombre ?? p.producto}</span>
                 <span style={{ fontSize: 14, fontWeight: 'bold', color: '#3b82f6' }}>{p.totalVendido} uds</span>
               </div>
             ))
@@ -88,7 +98,7 @@ export default function Dashboard() {
           ) : (
             data.agotados.map(p => (
               <div key={p.id} style={{ padding: '8px 0', borderBottom: '1px solid #f1f5f9', fontSize: 14, color: '#ef4444' }}>
-                {p.nombre}
+                {productos.find(prod => prod.id === p.id)?.nombre ?? p.nombre}
               </div>
             ))
           )}
@@ -102,7 +112,7 @@ export default function Dashboard() {
           ) : (
             data.stockBajo.map(p => (
               <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
-                <span style={{ fontSize: 14, color: '#1e293b' }}>{p.nombre}</span>
+                <span style={{ fontSize: 14, color: '#1e293b' }}>{productos.find(prod => prod.id === p.id)?.nombre ?? p.nombre}</span>
                 <span style={{ fontSize: 14, color: '#f59e0b' }}>{p.cantidad} / {p.stockMinimo}</span>
               </div>
             ))
