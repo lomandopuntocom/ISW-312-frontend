@@ -1,7 +1,7 @@
 import { inventoryApi, salesApi } from './axios';
 
 export const getDashboard = async (empresaId: string) => {
-  const [inventory, dailySales, topProducts, kdsStatus, stockItems] = await Promise.all([
+  const [dailySales, topProducts, kdsStatus, stockItems] = await Promise.all([
     inventoryApi.get(`/companies/${empresaId}/dashboard`).then(r => r.data),
     salesApi.get(`/companies/${empresaId}/dashboard/daily-sales`).then(r => r.data),
     salesApi.get(`/companies/${empresaId}/dashboard/top-products`).then(r => r.data),
