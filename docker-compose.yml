@@ -13,7 +13,7 @@ services:
       - ./database:/docker-entrypoint-initdb.d
 
   inventory-api:
-    build: ./fastinventoryInventory
+    build: ./ISW-312-Inventory.Api
     container_name: inventory-api-srv
     ports:
       - "5143:8080"
@@ -24,7 +24,7 @@ services:
       - postgres-db
 
   purchase-api:
-    build: ./fastinventoryPurchase
+    build: ./ISW-312-Purchase.Api
     container_name: purchase-api-srv
     ports:
       - "5085:8080"
@@ -36,7 +36,7 @@ services:
       - postgres-db
 
   sale-api:
-    build: ./fastinventorySale
+    build: ./ISW-312-Sale.Api
     container_name: sale-api-srv
     ports:
       - "5074:8080"
@@ -49,11 +49,11 @@ services:
 
   web-app:
     build:
-      context: ./fastinventoryWeb
+      context: ./ISW-312-frontend
       args:
         - VITE_INVENTORY_API_URL=${VITE_INVENTORY_API_URL}
-        - VITE_PURCHASE_API_URL=${VITE_PURCHASE_API_URL}
-        - VITE_SALE_API_URL=${VITE_SALE_API_URL}
+        - VITE_PURCHASES_API_URL=${VITE_PURCHASES_API_URL}
+        - VITE_SALES_API_URL=${VITE_SALES_API_URL}
     container_name: web-page-srv
     ports:
       - "3000:80"
