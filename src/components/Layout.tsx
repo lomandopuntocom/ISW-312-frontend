@@ -17,8 +17,15 @@ export default function Layout() {
     const companyCen = localStorage.getItem('companyCen') || empresa?.id;
     if (!companyCen) return;
 
-    const inventoryUrl = import.meta.env.VITE_INVENTORY_API_URL || 'http://localhost:5143';
-    const source = new EventSource(`${inventoryUrl}/api/inventory/companies/${companyCen}/restock-events`);
+    let inventoryUrl = import.meta.env.VITE_INVENTORY_API_URL || 'http://localhost:5143';
+    if (inventoryUrl.endsWith('/')) {
+      inventoryUrl = inventoryUrl.slice(0, -1);
+    }
+    const sseUrl = inventoryUrl.endsWith('/api/inventory')
+      ? `${inventoryUrl}/companies/${companyCen}/restock-events`
+      : `${inventoryUrl}/api/inventory/companies/${companyCen}/restock-events`;
+      
+    const source = new EventSource(sseUrl);
     
     source.onmessage = (event) => {
       try {
