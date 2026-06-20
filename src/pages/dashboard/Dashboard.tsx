@@ -11,6 +11,7 @@ interface DashboardData {
   agotados: { id: string; nombre: string }[];
   stockBajo: { id: string; nombre: string; cantidad: number; stockMinimo: number }[];
   comandas: { pendiente: number; enPreparacion: number; listo: number };
+  ventasMensuales: { mesActual: number; mesAnterior: number };
 }
 
 export default function Dashboard() {
@@ -46,8 +47,8 @@ export default function Dashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
         {[
           { label: 'Total vendido hoy', valor: `Bs. ${data.totalVendido.toFixed(2)}`, color: '#10b981', icono: '💰' },
-          { label: 'Tickets pagados', valor: data.cantidadTickets, color: '#3b82f6', icono: '🧾' },
-          { label: 'Ticket promedio', valor: `Bs. ${data.ticketPromedio.toFixed(2)}`, color: '#f59e0b', icono: '📊' },
+          { label: 'Ventas mes actual', valor: `Bs. ${data.ventasMensuales.mesActual.toFixed(2)}`, color: '#3b82f6', icono: '📅' },
+          { label: 'Ventas mes anterior', valor: `Bs. ${data.ventasMensuales.mesAnterior.toFixed(2)}`, color: '#6366f1', icono: '⏮️' },
         ].map(({ label, valor, color, icono }) => (
           <div key={label} style={{ background: 'white', borderRadius: 12, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: `4px solid ${color}` }}>
             <div style={{ fontSize: 28, marginBottom: 12 }}>{icono}</div>
